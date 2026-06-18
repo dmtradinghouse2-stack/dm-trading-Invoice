@@ -569,131 +569,150 @@ function printQuotation(){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
   <title>Invoice ${invNo} — DM Trading House</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#222;font-size:13px}
-    .page{width:210mm;min-height:297mm;margin:0 auto;padding:0;background:#fff;position:relative}
-    /* ── TOP HEADER BAND ── */
-    .header-band{background:#1a2744;padding:0;display:flex;align-items:stretch;min-height:88px}
-    .header-logo-box{background:#000;padding:14px 18px;display:flex;align-items:center;justify-content:center;min-width:100px}
-    .header-logo-box img{width:70px;height:70px;object-fit:contain}
-    .header-info{padding:14px 20px;flex:1;display:flex;flex-direction:column;justify-content:center}
-    .header-info h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:.02em}
-    .header-info .tagline{font-size:10.5px;color:#a8b8d0;margin-top:3px}
-    .header-info .contacts{font-size:10px;color:#8aa0ba;margin-top:4px;display:flex;gap:16px;flex-wrap:wrap}
-    .header-qno{background:#c8a951;padding:14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:130px}
-    .header-qno .qlabel{font-size:9px;font-weight:700;color:#1a2744;text-transform:uppercase;letter-spacing:.1em}
-    .po-band{background:#eef1f8;border-bottom:1px solid #d5dce8;padding:8px 24px;display:flex;gap:24px;flex-wrap:wrap}
-    .po-item{display:flex;gap:8px;align-items:center}
-    .po-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8a9ab5}
-    .po-val{font-size:11px;font-weight:600;color:#1a2744}
-    .grand-total-row{background:#1a2744;padding:14px 24px;display:flex;justify-content:flex-end;align-items:center;gap:20px;margin-top:0}
-    .gt-label{font-size:13px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.05em}
-    .gt-amount{font-size:22px;font-weight:700;color:#c8a951}
-    .header-qno .qnum{font-size:15px;font-weight:700;color:#1a2744;margin-top:3px;letter-spacing:.05em}
-    .header-qno .qdate{font-size:10px;color:#5a3d00;margin-top:4px}
-    /* ── CUSTOMER BAND ── */
-    .cust-band{background:#f4f6fb;border-bottom:2px solid #e2e8f0;padding:12px 24px;display:flex;gap:32px;align-items:center}
-    .cust-field{display:flex;flex-direction:column;gap:2px}
-    .cust-label{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#8a9ab5}
-    .cust-val{font-size:12.5px;font-weight:600;color:#1a2744}
-    /* ── SECTION TITLE ── */
-    .section-title{background:#1a2744;color:#c8a951;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:7px 16px}
-    /* ── TABLE ── */
+    body{font-family:'Inter',Arial,sans-serif;background:#f4f6fb;color:#1a2744;font-size:13px}
+    .page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.12)}
+    /* HEADER */
+    .hdr{display:flex;align-items:stretch;min-height:96px;background:#1a2744}
+    .hdr-logo{background:#000;padding:16px 20px;display:flex;align-items:center;justify-content:center;min-width:110px}
+    .hdr-logo img{width:66px;height:66px;object-fit:contain}
+    .hdr-body{flex:1;padding:16px 22px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(255,255,255,.08)}
+    .hdr-body h1{font-size:22px;font-weight:800;color:#fff;letter-spacing:.03em;text-transform:uppercase}
+    .hdr-body .sub{font-size:10px;color:#8fa8c8;margin-top:3px;letter-spacing:.06em;text-transform:uppercase}
+    .hdr-body .contacts{margin-top:7px;display:flex;gap:18px;flex-wrap:wrap}
+    .hdr-body .contacts span{font-size:10px;color:#7a9ab8;display:flex;align-items:center;gap:4px}
+    .hdr-inv{min-width:150px;background:#c8a951;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px;gap:3px}
+    .hdr-inv .inv-label{font-size:8.5px;font-weight:700;color:#5a3d00;text-transform:uppercase;letter-spacing:.12em}
+    .hdr-inv .inv-num{font-size:16px;font-weight:800;color:#1a2744;letter-spacing:.04em}
+    .hdr-inv .inv-date{font-size:9.5px;color:#5a3d00;margin-top:2px}
+    .hdr-inv .inv-badge{margin-top:5px;background:#1a2744;color:#c8a951;font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.08em}
+    /* CUSTOMER STRIP */
+    .cust-strip{background:#f0f4fb;border-bottom:2px solid #dce3ef;padding:12px 24px;display:flex;gap:0;align-items:stretch}
+    .cust-block{flex:1;padding:0 20px;border-right:1px solid #dce3ef}
+    .cust-block:first-child{padding-left:0}
+    .cust-block:last-child{border-right:none}
+    .cust-lbl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#8a9ab8;margin-bottom:4px}
+    .cust-val{font-size:13px;font-weight:600;color:#1a2744}
+    .cust-val.sm{font-size:11.5px}
+    /* SECTION HEADER */
+    .sec-hdr{background:#1a2744;padding:7px 24px;display:flex;align-items:center;gap:8px}
+    .sec-hdr span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c8a951}
+    .sec-hdr::before{content:'';width:3px;height:14px;background:#c8a951;border-radius:2px;display:inline-block}
+    /* TABLE */
     table{width:100%;border-collapse:collapse}
-    thead th{background:#253660;color:#c8a951;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:8px 8px;border-bottom:2px solid #c8a951}
-    tbody td{border-bottom:1px solid #edf0f5;vertical-align:middle}
-    /* ── NOTE ── */
-    .note-band{margin:0 24px 16px;padding:10px 14px;background:#fffbf0;border-left:3px solid #c8a951;border-radius:0 6px 6px 0;font-size:11.5px;color:#555}
-    .note-band strong{color:#1a2744}
-    /* ── FOOTER ── */
-    .footer-band{background:#1a2744;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:auto}
-    .footer-band .ft-left{font-size:9.5px;color:#8aa0ba}
-    .footer-band .ft-right{font-size:9.5px;color:#c8a951;font-weight:600}
-    /* ── TERMS ── */
-    .terms{padding:12px 24px;background:#f9fafc;border-top:1px solid #e2e8f0}
-    .terms-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#1a2744;margin-bottom:6px}
-    .terms ol{padding-left:16px}
-    .terms li{font-size:9.5px;color:#666;line-height:1.7}
-    /* ── WATERMARK BADGE ── */
-    .valid-badge{display:inline-block;border:1.5px solid #c8a951;color:#c8a951;font-size:9px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:.08em;vertical-align:middle;margin-left:8px}
+    thead tr{background:#253660}
+    thead th{color:#c8a951;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:9px 10px;border-bottom:2px solid #c8a951}
+    tbody tr{transition:background .1s}
+    tbody tr:nth-child(even){background:#f7f9fc}
+    tbody tr:nth-child(odd){background:#fff}
+    tbody td{padding:8px 10px;border-bottom:1px solid #edf0f5;vertical-align:middle}
+    tbody tr:last-child td{border-bottom:none}
+    .code-cell{font-size:10px;font-weight:700;color:#c8a951}
+    .code-cell.custom{color:#94a3b8}
+    .name-cell{font-size:12px;font-weight:500;color:#1a2744;line-height:1.4}
+    .meta-cell{font-size:10px;color:#94a3b8}
+    .unit-cell{font-size:11px;font-weight:600;color:#334155;text-align:center}
+    .qty-cell{font-size:12px;font-weight:700;color:#1a2744;text-align:center}
+    .price-cell{font-size:12px;font-weight:500;color:#334155;text-align:right}
+    .sub-cell{font-size:12px;font-weight:700;color:#1a2744;text-align:right}
+    /* TOTAL BOX */
+    .total-section{padding:0 24px 0;margin-top:0}
+    .total-box{background:#1a2744;border-radius:0 0 8px 8px;padding:14px 20px;display:flex;justify-content:flex-end;align-items:center;gap:20px}
+    .total-lbl{font-size:12px;font-weight:700;color:#c8a951;text-transform:uppercase;letter-spacing:.08em}
+    .total-amt{font-size:26px;font-weight:800;color:#c8a951}
+    .total-amt span{font-size:14px;font-weight:500;margin-right:3px;color:#8aa0ba}
+    /* NOTE */
+    .note-wrap{padding:14px 24px 0}
+    .note-box{background:#fffbf0;border-left:3px solid #c8a951;padding:10px 14px;border-radius:0 6px 6px 0;font-size:11px;color:#555;line-height:1.6}
+    .note-box strong{color:#1a2744;font-weight:700}
+    /* TERMS */
+    .terms{padding:14px 24px;margin-top:4px}
+    .terms-title{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid #edf0f5}
+    .terms ol{padding-left:14px}
+    .terms li{font-size:9px;color:#94a3b8;line-height:1.8}
+    /* FOOTER */
+    .footer{background:#1a2744;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+    .footer .ft-l{font-size:9px;color:#6a88a8}
+    .footer .ft-r{font-size:9px;color:#c8a951;font-weight:600}
+    .footer .ft-c{font-size:9px;color:#8aa0ba;text-align:center}
+    /* DIVIDER */
+    .spacer{height:16px}
     @media print{
-      body{margin:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
-      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-      .page{width:100%;box-shadow:none}
+      body{background:#fff;margin:0}
+      .page{box-shadow:none;width:100%}
       @page{margin:0;size:A4}
+      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
     }
-    /* Force colors always */
-    .header-band{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    .header-logo-box{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    .header-qno{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    .section-title{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    thead th{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    .footer-band{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-    .cust-band{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   </style></head><body>
   <div class="page">
 
     <!-- HEADER -->
-    <div class="header-band">
-      <div class="header-logo-box"><img src="${LOGO}" alt="DM Logo"></div>
-      <div class="header-info">
-        <h1>DM TRADING HOUSE</h1>
-        <div class="tagline">Safety &amp; Industrial Equipment Supplier</div>
+    <div class="hdr">
+      <div class="hdr-logo"><img src="${LOGO}" alt="DM Logo"></div>
+      <div class="hdr-body">
+        <h1>DM Trading House</h1>
+        <div class="sub">Safety &amp; Industrial Equipment Supplier</div>
         <div class="contacts">
           <span>&#128205; 14/C/1 Thampala, Raddolugama</span>
-          <span>&#128222; +94 71-582-1370 / 77-183-6582</span>
+          <span>&#128222; +94 71-582-1370 &nbsp;/&nbsp; 77-183-6582</span>
           <span>&#9993; dmtradinghouse2@gmail.com</span>
         </div>
       </div>
-      <div class="header-qno">
-        <span class="qlabel">Quotation</span>
-        <span class="qnum">${currentQNo}</span>
-        <span class="qdate">${date||'—'}</span>
-        <span class="valid-badge">VALID 30 DAYS</span>
+      <div class="hdr-inv">
+        <span class="inv-label">Invoice No</span>
+        <span class="inv-num">${invNo}</span>
+        <span class="inv-date">${date||'—'}</span>
+        ${poNo?`<span class="inv-date" style="margin-top:2px;font-size:9px">PO: ${poNo}</span>`:''}
+        <span class="inv-badge">VALID 30 DAYS</span>
       </div>
     </div>
 
-    <!-- CUSTOMER INFO -->
-    <div class="cust-band">
-      <div class="cust-field">
-        <span class="cust-label">Bill To</span>
-        <span class="cust-val">${name||'—'}</span>
+    <!-- CUSTOMER STRIP -->
+    <div class="cust-strip">
+      <div class="cust-block">
+        <div class="cust-lbl">Bill To</div>
+        <div class="cust-val">${name||'—'}</div>
+        ${tel?`<div class="cust-val sm" style="margin-top:3px;color:#64748b">${tel}</div>`:''}
       </div>
-      ${email?`<div class="cust-field"><span class="cust-label">Email</span><span class="cust-val">${email}</span></div>`:''}
-      <div class="cust-field" style="margin-left:auto;text-align:right">
-        <span class="cust-label">Prepared By</span>
-        <span class="cust-val">DM Trading House</span>
+      ${email?`<div class="cust-block"><div class="cust-lbl">Email</div><div class="cust-val sm">${email}</div></div>`:''}
+      <div class="cust-block" style="margin-left:auto;text-align:right;border-right:none">
+        <div class="cust-lbl">Prepared By</div>
+        <div class="cust-val">DM Trading House</div>
+        <div class="cust-val sm" style="color:#64748b;margin-top:2px">Raddolugama, Sri Lanka</div>
       </div>
     </div>
+
+    <!-- PRODUCTS SECTION HEADER -->
+    <div class="sec-hdr"><span>Items &amp; Products</span></div>
 
     <!-- PRODUCTS TABLE -->
-    <div class="section-title">&#9632; Invoice Items</div>
     <table>
       <thead>
         <tr>
-          <th style="width:50px;text-align:center">Image</th>
-          <th style="width:50px">Code</th>
-          <th>Product Name</th>
-          <th style="width:80px">Color</th>
-          <th style="width:55px">Size</th>
+          <th style="width:52px;text-align:center">Image</th>
+          <th style="width:60px">Code</th>
+          <th>Description</th>
+          <th style="width:90px;text-align:center">Color / Size</th>
           <th style="width:45px;text-align:center">Unit</th>
           <th style="width:40px;text-align:center">QTY</th>
-          <th style="width:95px;text-align:right">Unit Price (LKR)</th>
-          <th style="width:95px;text-align:right">Sub Total (LKR)</th>
+          <th style="width:110px;text-align:right">Unit Price</th>
+          <th style="width:110px;text-align:right">Sub Total</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>
 
     <!-- GRAND TOTAL -->
-    <div class="grand-total-row">
-      <div class="gt-label">Grand Total</div>
-      <div class="gt-amount">LKR ${grandTotalPrint.toFixed(2)}</div>
+    <div class="total-box">
+      <span class="total-lbl">Grand Total</span>
+      <span class="total-amt"><span>LKR</span>${grandTotalPrint.toFixed(2)}</span>
     </div>
 
     <!-- NOTE -->
-    ${note?`<div style="height:12px"></div><div class="note-band"><strong>Note &nbsp;</strong>${note}</div>`:'<div style="height:16px"></div>'}
+    ${note?`<div class="note-wrap"><div class="note-box"><strong>Note &nbsp;</strong>${note}</div></div>`:''}
+
+    <div class="spacer"></div>
 
     <!-- TERMS -->
     <div class="terms">
@@ -708,9 +727,10 @@ function printQuotation(){
     </div>
 
     <!-- FOOTER -->
-    <div class="footer-band">
-      <span class="ft-left">Thank you for choosing DM Trading House — your trusted partner for safety equipment.</span>
-      <span class="ft-right">dmtradinghouse2@gmail.com</span>
+    <div class="footer">
+      <span class="ft-l">Thank you for choosing DM Trading House — your trusted partner for safety equipment.</span>
+      <span class="ft-c"></span>
+      <span class="ft-r">dmtradinghouse2@gmail.com</span>
     </div>
 
   </div>
