@@ -395,9 +395,9 @@ async function submitQuote(){
   const name=document.getElementById('cust-name').value.trim();
   const date=document.getElementById('quote-date').value;
   const status=document.getElementById('status-msg');
-  if(!name){status.className='status error';status.textContent='⚠ Please enter the customer / company name.';return;}
-  if(!date){status.className='status error';status.textContent='⚠ Please select a date.';return;}
-  if(!Object.keys(cart).length && !Object.keys(customItems).length){status.className='status error';status.textContent='⚠ Please select at least one product.';return;}
+  if(!name){status.className='status error';status.textContent='⚠ Please enter the customer / company name.';status.style.display='block';return false;}
+  if(!date){status.className='status error';status.textContent='⚠ Please select a date.';status.style.display='block';return false;}
+  if(!Object.keys(cart).length && !Object.keys(customItems).length){status.className='status error';status.textContent='⚠ Please select at least one product.';status.style.display='block';return false;}
 
   // Check for items without price
   const noPrice = [
@@ -411,7 +411,8 @@ async function submitQuote(){
     });
     status.className='status error';
     status.textContent='⚠ Please enter Unit Price for: ' + names.join(', ');
-    return;
+    status.style.display='block';
+    return false;
   }
 
   const btn=document.getElementById('submit-btn');
@@ -446,6 +447,7 @@ async function submitQuote(){
     await fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     status.className='status success';
     status.textContent='✓ Invoice '+currentQNo+' successfully submitted to Google Sheets!';
+    status.style.display='block';
     saveCustomerToHistory(name, '');
     currentQNo=genQNo();
     document.getElementById('qno-display').textContent=currentQNo;
@@ -456,11 +458,15 @@ async function submitQuote(){
     document.getElementById('po-no').value='';
     document.getElementById('note').value='';
     renderProducts();renderQuote();
+    btn.disabled=false;btn.innerHTML=btnOriginalText;
+    return true;
   }catch(e){
     status.className='status error';
     status.textContent='⚠ Submission failed: '+e.message;
+    status.style.display='block';
+    btn.disabled=false;btn.innerHTML=btnOriginalText;
+    return false;
   }
-  btn.disabled=false;btn.innerHTML=btnOriginalText;
 }
 
 
@@ -510,12 +516,31 @@ async function submitAndPrint(){
   const status=document.getElementById('status-msg');
   if(!name){status.className='status error';status.textContent='⚠ Please enter the customer / company name.';status.style.display='block';return;}
   if(!date){status.className='status error';status.textContent='⚠ Please select a date.';status.style.display='block';return;}
-  if(!Object.keys(cart).length){status.className='status error';status.textContent='⚠ Please select at least one product.';status.style.display='block';return;}
+  if(!Object.keys(cart).length && !Object.keys(customItems).length){status.className='status error';status.textContent='⚠ Please select at least one product.';status.style.display='block';return;}
 
-  // Open the print/PDF window first, while the cart and customer fields still hold the current data
-  printQuotation();
-  // Then submit the same data to Google Sheets (this also clears the form on success)
-  await submitQuote();
+  // Same price check submitQuote performs — block BEFORE printing so we never
+  // print an invoice that then silently fails to reach Google Sheets.
+  const noPrice = [
+    ...Object.keys(cart).filter(code=>cart[code].price===null||cart[code].price===undefined),
+    ...Object.keys(customItems).filter(code=>customItems[code].price===null||customItems[code].price===undefined)
+  ];
+  if(noPrice.length){
+    const names = noPrice.map(code=>{
+      if(cart[code]){const p=PRODUCTS.find(x=>x.code===code);return p?p.name:code;}
+      return customItems[code]?customItems[code].name:code;
+    });
+    status.className='status error';
+    status.textContent='⚠ Please enter Unit Price for: ' + names.join(', ');
+    status.style.display='block';
+    return;
+  }
+
+  // Submit to Google Sheets FIRST, while cart and customer fields still hold the current data.
+  // Only open the print/PDF window if the submission actually succeeded.
+  const ok = await submitQuote();
+  if(ok){
+    printQuotation();
+  }
 }
 
 function printQuotation(){
