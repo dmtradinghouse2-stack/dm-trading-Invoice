@@ -584,6 +584,7 @@ function printQuotation(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
   <title>Invoice ${invNo} — DM Trading House</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
@@ -659,6 +660,7 @@ function printQuotation(){
       .page{box-shadow:none;width:100%}
       @page{margin:0;size:A4}
       *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+      .no-print{display:none!important}
     }
   </style></head><body>
   <div class="page">
@@ -748,16 +750,36 @@ function printQuotation(){
     </div>
 
   </div>
-  <div id="print-tip" style="background:#fffbf0;border:1px solid #c8a951;color:#7a5c00;font-size:11px;padding:8px 14px;text-align:center;font-family:Arial,sans-serif">
-    &#128161; <strong>Tip:</strong> In the print dialog → <strong>More settings</strong> → enable <strong>"Background graphics"</strong> to keep colors &amp; dark header.
-    <button onclick="document.getElementById('print-tip').style.display='none'" style="margin-left:12px;background:#c8a951;color:#1a2744;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700">Got it ✓</button>
+  <div id="print-tip" class="no-print" style="background:#fffbf0;border:1px solid #c8a951;color:#7a5c00;font-size:11px;padding:8px 14px;text-align:center;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">
+    <span>&#128161; <strong>Tip:</strong> In the print dialog → <strong>More settings</strong> → enable <strong>"Background graphics"</strong> to keep colors &amp; dark header.</span>
+    <button onclick="downloadPDF(this)" style="background:#1a2744;color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700">&#128190; Save as PDF</button>
+    <button onclick="document.getElementById('print-tip').style.display='none'" style="background:#c8a951;color:#1a2744;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700">Got it ✓</button>
   </div>
   <script>
+    function downloadPDF(btn){
+      var originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Generating…';
+      var opt = {
+        margin: 0,
+        filename: 'Invoice_${invNo}.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(document.querySelector('.page')).save().then(function(){
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }).catch(function(err){
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        alert('PDF generation failed: ' + err);
+      });
+    }
     window.onload=function(){
       var imgs=document.images,total=imgs.length,loaded=0,done=false;
       function tryPrint(){
         if(done)return;done=true;
-        document.getElementById('print-tip').style.display='none';
         window.print();
       }
       if(total===0){tryPrint();return;}
