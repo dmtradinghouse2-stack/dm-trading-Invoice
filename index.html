@@ -536,11 +536,12 @@ async function submitAndPrint(){
   }
 
   // Submit to Google Sheets FIRST, while cart and customer fields still hold the current data.
-  // Only open the print/PDF window if the submission actually succeeded.
-  const ok = await submitQuote();
-  if(ok){
-    printQuotation();
-  }
+  // The print/PDF window now opens regardless of whether the Sheets submission succeeded —
+  // if it failed, the error message stays visible on screen (we don't clear/hide it here)
+  // so the user can see it after returning from the print dialog, but they can still
+  // generate/print/save the PDF either way.
+  await submitQuote();
+  printQuotation();
 }
 
 function printQuotation(){
